@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+create_extdata_objects.R
+^inst/gisdata/.*\\.
+^inst/gisdata/ConnectivityZones2020/.*\\.
