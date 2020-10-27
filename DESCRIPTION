@@ -1,8 +1,8 @@
 Package: rIBMsSnowCrab
 Type: Package
 Title: Basic functions for dealing with DisMELS IBM model output
-Version: 2020.09.28
-Date: 2020-09-28
+Version: 2020.20.26
+Date: 2020-20-26
 Author: William T. Stockhausen
 Maintainer: William T. Stockhausen <william.stockhausen@noaa.gov>
 Description: Provides a set of basic functions for dealing with DisMELS Snow Crab IBM model output.
@@ -20,5 +20,5 @@ Imports:
     tmaptools (>= 2.0),
     wtsGIS (>= 2020.01.24),
     wtsROMS,
-    wtsUtilities (>= 2019.09.15)
+    wtsUtilities (>= 2020.10.26)
 RoxygenNote: 7.1.1
