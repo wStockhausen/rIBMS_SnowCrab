@@ -15,10 +15,10 @@ getConnectivityZones(
 \item{crs_type}{- type of crs ("LL" for lat/lon, "AA" for Alaska Albers projection)}
 }
 \value{
-\code{sf} dataframe with connectivity zones in given crs.
+\pkg{sf} dataframe with connectivity zones in given crs.
 }
 \description{
-Function to get a set of connectivity zones as a \code{sf} dataframe.
+Function to get a set of connectivity zones as a \pkg{sf} dataframe.
 }
 \details{
 None.
