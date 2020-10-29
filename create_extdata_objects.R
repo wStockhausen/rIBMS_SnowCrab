@@ -6,23 +6,24 @@ require(magrittr);
 crs_4326 = sf::st_crs(4326);#--WGS84
 crs_3338 = sf::st_crs(3338);#--NAD83 Alaska Albers
 
+
 #--create connectivity zones for 30-layer ROMS runs
 #----read in shapefile for connectivity zones for the 30-layer ROMS datasets
 #------shapefile is in NAD83 Alaska Albers 
 fn_cz20  = "./inst/gisdata/ConnectivityZones2020/ConnectivityZones.SnowCrab.2020.shp";
 sf_cz20_xy  = wtsGIS::readFeatureLayer(fn_cz20);
+names(sf_cz20_xy)[1] = "zone";
 if (sf::st_crs(sf_cz20_xy)!=crs_3338) stop("Error! CRS for sf_cz20_xy is not Alaska Albers!");
 bbx_cz20_xy = wtsGIS::getBBox(sf_cz20_xy);
 #----convert to WGS84 with longitudes 0-360
 sf_cz20_ll  = sf_cz20_xy %>% sf::st_transform(sf::st_crs(4326)) %>% sf::st_shift_longitude();
 bbx_cz20_ll = wtsGIS::getBBox(sf_cz20_ll);
-ggplot()+
-  geom_sf(data=sf_cz20_xy,colour="blue",fill="light blue");
-ggplot()+
-  geom_sf(data=sf_cz20_ll,colour="blue",fill="light blue");
+ggplot(data=sf_cz20_ll,mapping=aes(fill=zone), colour="black")+geom_sf();
+ggplot(data=sf_cz20_xy,mapping=aes(fill=zone), colour="black")+geom_sf();
 #--save objects
 wtsUtilities::saveObj(sf_cz20_xy,"./inst/extdata/ConnectivityZones2020.XY.RData");
 wtsUtilities::saveObj(sf_cz20_ll,"./inst/extdata/ConnectivityZones2020.LL.RData");
+
 
 #--create connectivity zones for the 10-layer ROMS hindcast study
 #--read in Mike Torre's connectivity object ("ConGrid1", a sp::SpatialPolygonsDataFrame)
@@ -31,19 +32,20 @@ load(fn_cz19,envir=environment());
 #----convert to sf dataframe, shifting longitudes to 0-360 and coalescing polygons cut at IDL
 sf_cz19_ll = sf::st_as_sf(ConGrid1) %>% sf::st_shift_longitude() %>% sf::st_union(by_feature=TRUE);
 rm(ConGrid1);
+sf_cz19_ll %<>% select(OBJECTID,geometry);
+names(sf_cz19_ll)[1] = "zone";
+sf_cz19_ll$zone = as.integer(as.character(sf_cz19_ll$zone));
 sf::st_crs(sf_cz19_ll) = crs_4326;
 bbx_cz19_ll = sf::st_bbox(sf_cz19_ll);#--bbox in lat/lon
-#----reorder levels in numerical order
-lvls = as.character(sort(as.numeric(levels(sf_cz19_ll$OBJECTID))));
-sf_cz19_ll$OBJECTID = factor(as.character(sf_cz19_ll$OBJECTID),levels=lvls);
-rm(lvls);
+# #----reorder levels in numerical order
+# lvls = as.character(sort(as.numeric(levels(sf_cz19_ll$OBJECTID))));
+# sf_cz19_ll$OBJECTID = factor(as.character(sf_cz19_ll$OBJECTID),levels=lvls);
+# rm(lvls);
 #----transform to Alaska Albers projection
 sf_cz19_xy  = sf_cz19_ll %>% sf::st_transform(crs_3338);
 bbx_cz19_xy = sf::st_bbox(sf_cz19_xy);#--bbox in projected crs
-ggplot()+
-  geom_sf(data=sf_cz19_ll,colour="red", fill="pink");
-ggplot()+
-  geom_sf(data=sf_cz19_xy,colour="red", fill="pink");
+ggplot(data=sf_cz19_ll,mapping=aes(fill=zone), colour="black")+geom_sf();
+ggplot(data=sf_cz19_xy,mapping=aes(fill=zone), colour="black")+geom_sf();
 #----save objects
 wtsUtilities::saveObj(sf_cz19_ll,"./inst/extdata/ConnectivityZones2019.LL.RData");
 wtsUtilities::saveObj(sf_cz19_xy,"./inst/extdata/ConnectivityZones2019.XY.RData");
@@ -53,55 +55,93 @@ ggplot()+
   geom_sf(data=sf_cz19_ll,colour="red", fill="pink")+
   geom_sf(data=sf_cz20_ll,colour="blue",fill="light blue",alpha=0.5);
 
+
 #--create sf dataframes with labels for connectivity zones
-dfr_acs19_ll = data.frame(zone=sf_cz19_ll$OBJECTID,
-                         lon = rep(NA, length(sf_cz19_ll$OBJECTID)),
-                         lat = rep(NA, length(sf_cz19_ll$OBJECTID)));
-for (r in 1:nrow(dfr_acs19_ll)){
+dfr_lbls19_ll = data.frame(zone=sf_cz19_ll$zone,
+                           lon = rep(NA, nrow(sf_cz19_ll)),
+                           lat = rep(NA, nrow(sf_cz19_ll)));
+for (r in 1:nrow(dfr_lbls19_ll)){
   ctr = sf::st_coordinates(sf::st_centroid(sf_cz19_ll$geometry[r],of_largest_polygon=TRUE));
-  dfr_acs19_ll$lon[r] = ctr[1,1];
-  dfr_acs19_ll$lat[r] = ctr[1,2];
+  dfr_lbls19_ll$lon[r] = ctr[1,1];
+  dfr_lbls19_ll$lat[r] = ctr[1,2];
 }
-dfr_acs20_ll = data.frame(zone=sf_cz20_ll$Id,
-                         lon = rep(NA, length(sf_cz20_ll$Id)),
-                         lat = rep(NA, length(sf_cz20_ll$Id)));
-for (r in 1:nrow(dfr_acs20_ll)){
+dfr_lbls20_ll = data.frame(zone=sf_cz20_ll$zone,
+                           lon = rep(NA, nrow(sf_cz20_ll)),
+                           lat = rep(NA, nrow(sf_cz20_ll)));
+for (r in 1:nrow(dfr_lbls20_ll)){
   ctr = sf::st_coordinates(sf::st_centroid(sf_cz20_ll$geometry[r],of_largest_polygon=TRUE));
-  dfr_acs20_ll$lon[r] = ctr[1,1];
-  dfr_acs20_ll$lat[r] = ctr[1,2];
+  dfr_lbls20_ll$lon[r] = ctr[1,1];
+  dfr_lbls20_ll$lat[r] = ctr[1,2];
 }
-#------adjust locations for some labels (note row != Id for acs20)
-dfr_acs20_ll$lon[ 4] = dfr_acs19_ll$lon[ 4] = 188.5;
-dfr_acs20_ll$lon[ 7] = dfr_acs19_ll$lon[ 7] = 189.0;
-dfr_acs20_ll$lat[18] = dfr_acs19_ll$lat[18] = 62.0;
+#------adjust locations for some labels (note row number != zone for dfr_lbls20)
+dfr_lbls20_ll$lon[ 4] = dfr_lbls19_ll$lon[ 4] = 188.5;
+dfr_lbls20_ll$lon[ 7] = dfr_lbls19_ll$lon[ 7] = 189.0;
+dfr_lbls20_ll$lat[18] = dfr_lbls19_ll$lat[18] = 62.0;
 
 #----create sf dataframe
-sf_acs19_ll = wtsGIS::createSF_points(dfr_acs19_ll,xCol="lon",yCol="lat");
-sf::st_crs(sf_acs19_ll) = crs_4326;#--reassign WGS84 crs
-sf_acs19_xy = sf_acs19_ll %>% sf::st_transform(crs_3338);
-sf_acs20_ll = wtsGIS::createSF_points(dfr_acs20_ll,xCol="lon",yCol="lat");
-sf::st_crs(sf_acs20_ll) = crs_4326;#--reassign WGS84 crs
-sf_acs20_xy = sf_acs20_ll %>% sf::st_transform(crs_3338);
+sf_lbls19_ll = wtsGIS::createSF_points(dfr_lbls19_ll,xCol="lon",yCol="lat");
+sf::st_crs(sf_lbls19_ll) = crs_4326;#--reassign WGS84 crs
+sf_lbls19_xy = sf_lbls19_ll %>% sf::st_transform(crs_3338);
+sf_lbls20_ll = wtsGIS::createSF_points(dfr_lbls20_ll,xCol="lon",yCol="lat");
+sf::st_crs(sf_lbls20_ll) = crs_4326;#--reassign WGS84 crs
+sf_lbls20_xy = sf_lbls20_ll %>% sf::st_transform(crs_3338);
 
 #----check plot
 ggplot()+
   geom_sf(data=sf_cz19_ll,colour="red", fill="pink")+
-  geom_sf_text(data=sf_acs19_ll,mapping=ggplot2::aes(label=zone),colour="red") +
+  geom_sf_text(data=sf_lbls19_ll,mapping=ggplot2::aes(label=zone),colour="red") +
   geom_sf(data=sf_cz20_ll,colour="blue",fill="light blue",alpha=0.5) +
-  geom_sf_text(data=sf_acs20_ll,mapping=ggplot2::aes(label=zone),colour="blue")+
+  geom_sf_text(data=sf_lbls20_ll,mapping=ggplot2::aes(label=zone),colour="blue")+
   theme(axis.title.x = element_blank(),axis.title.y = element_blank());
 ggplot()+
   geom_sf(data=sf_cz19_xy,colour="red", fill="pink")+
-  geom_sf_text(data=sf_acs19_xy,mapping=ggplot2::aes(label=zone),colour="red") +
+  geom_sf_text(data=sf_lbls19_xy,mapping=ggplot2::aes(label=zone),colour="red") +
   geom_sf(data=sf_cz20_xy,colour="blue",fill="light blue",alpha=0.5) +
-  geom_sf_text(data=sf_acs20_xy,mapping=ggplot2::aes(label=zone),colour="blue")+
+  geom_sf_text(data=sf_lbls20_xy,mapping=ggplot2::aes(label=zone),colour="blue")+
   theme(axis.title.x = element_blank(),axis.title.y = element_blank());
   
 #----save objects
-wtsUtilities::saveObj(sf_acs19_ll,"./inst/extdata/CZLabels2019.LL.RData")
-wtsUtilities::saveObj(sf_acs19_xy,"./inst/extdata/CZLabels2019.XY.RData")
-wtsUtilities::saveObj(sf_acs20_ll,"./inst/extdata/CZLabels2020.LL.RData")
-wtsUtilities::saveObj(sf_acs20_xy,"./inst/extdata/CZLabels2020.XY.RData")
+wtsUtilities::saveObj(sf_lbls19_ll,"./inst/extdata/CZLabels2019.LL.RData")
+wtsUtilities::saveObj(sf_lbls19_xy,"./inst/extdata/CZLabels2019.XY.RData")
+wtsUtilities::saveObj(sf_lbls20_ll,"./inst/extdata/CZLabels2020.LL.RData")
+wtsUtilities::saveObj(sf_lbls20_xy,"./inst/extdata/CZLabels2020.XY.RData")
+
+
+#--create vector mapping between connectivity zones
+#----get sf dataframes with labels
+sf_lbls19_ll=wtsUtilities::getObj("./inst/extdata/CZLabels2019.LL.RData")
+sf_lbls19_xy=wtsUtilities::getObj("./inst/extdata/CZLabels2019.XY.RData")
+sf_lbls20_ll=wtsUtilities::getObj("./inst/extdata/CZLabels2020.LL.RData")
+sf_lbls20_xy=wtsUtilities::getObj("./inst/extdata/CZLabels2020.XY.RData")
+
+createConnections<-function(sf_dfr){
+  tmp1 = sf_dfr  %>% sf::st_drop_geometry();
+  tmp2 = tmp1 %>% dplyr::inner_join(tmp1,by=character(),suffix=c("_start","_end"));
+  nr   = nrow(tmp2);
+  geoms = vector(length=nr,mode="list");
+  for (rw in 1:nr){
+    tbl = tibble::tibble(x=c(tmp2$lon_start[rw],tmp2$lon_end[rw]),
+                         y=c(tmp2$lat_start[rw],tmp2$lat_end[rw]));
+    geoms[[rw]] = sfheaders::sfg_linestring(tbl,x="x",y="y");
+  }
+  sfc_geoms = sf::st_sfc(geoms,crs=sf::st_crs(sf_dfr));
+  sf_dfr1 = sf::st_sf(dplyr::bind_cols(tmp2,sf::st_sf(geometry=sfc_geoms,crs=sf::st_crs(sf_dfr))));
+  names(sf_dfr1) = c("startZone","startLon","startLat","endZone","endLon","endLat","geometry");
+  return(sf_dfr1);
+}
+sf_arrs19_ll = createConnections(sf_lbls19_ll);
+sf_arrs19_xy = sf_arrs19_ll %>% sf::st_transform(3338);
+sf_arrs20_ll = createConnections(sf_lbls20_ll);
+sf_arrs20_xy = sf_arrs20_ll %>% sf::st_transform(3338);
+tmp = sf_arrs19_ll;
+ggplot(tmp,aes(colour=zone_start))+geom_sf();
+ggplot(tmp,aes(colour=startZone))+geom_segment(mapping=aes(x=startLon,y=startLat,xend=endLon,yend=endLat),arrow=arrow());
+#----save objects
+wtsUtilities::saveObj(sf_arrs19_ll,"./inst/extdata/CZArrows2019.LL.RData")
+wtsUtilities::saveObj(sf_arrs19_xy,"./inst/extdata/CZArrows2019.XY.RData")
+wtsUtilities::saveObj(sf_arrs20_ll,"./inst/extdata/CZArrows2020.LL.RData")
+wtsUtilities::saveObj(sf_arrs20_xy,"./inst/extdata/CZArrows2020.XY.RData")
+                                
 
 #--convert map object "m" to sf dataframe
 fn_land = "./inst/gisdata/AlaskaLand.RData";
