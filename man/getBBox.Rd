@@ -4,7 +4,7 @@
 \alias{getBBox}
 \title{Get the standard bbox for maps of model output}
 \usage{
-getBBox()
+getBBox(ll = TRUE)
 }
 \value{
 \code{sf}-style version of standard bounding box in WGS84

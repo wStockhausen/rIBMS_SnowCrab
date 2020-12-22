@@ -6,6 +6,7 @@
 #' @param czType - type of connectivity zone to get ("2020"or "2019")
 #' @param xy - flag (T/F) for coordinate type (TRUE=Alaska Albers projection; FALSE=WGS84 lat/lon)
 #' @param bw - flag (T/F) for black & white or color scheme
+#' @param noBathym - flag (T/F) to not include bathymetry layer (default=FALSE)
 #' 
 #' @return list with ggplot2 layers 'bathym', 'land', 'zones', 'labels', 'map_scale', and 'theme'.
 #' 
@@ -18,13 +19,16 @@
 #' ggplot()+lst$bathym+lst$land+lst$zones+lst$labels+lst$map_scale+lst$theme;
 #' 
 #' @import ggplot2
+#' @importFrom wtsGIS get_crs
+#' @importFrom wtsGIS transformBBox
 #' @importFrom wtsUtilities getObj
 #' 
 #' @export
 #' 
-getBaseMapLayers<-function(czType=c("2020","2019"),
+getBasemapLayers<-function(czType=c("2020","2019"),
                            xy=FALSE,
-                           bw=FALSE){
+                           bw=FALSE,
+                           noBathym=FALSE){
   czType = czType[1];#--connectivity zone type
   if (xy){xyType ="XY";} else {xyType ="LL";}
   if (bw){clrType="BW";} else {clrType="RGB";}
@@ -52,14 +56,16 @@ getBaseMapLayers<-function(czType=c("2020","2019"),
 
   #--get bathymetry layer
   lyr_bathym=NULL;
-  if (!xy){
-    fn = paste0("extdata/BathymAnnotLayer",clrType,".LL.RData");
+  if (!noBathym){
+    fn = paste0("extdata/BathymAnnotLayer",clrType,".",xyType,".RData");
     lyr_bathym = wtsUtilities::getObj(system.file(fn,package="rIBMsSnowCrab"));
   }
   
   #--get coordinate scale for default basemap
   map_scale = NULL;
-  if (!xy) map_scale = ggplot2::coord_sf(xlim=c(168,203),y=c(51.67,68.49),expand=FALSE,clip="on");
+  bbx = rIBMsSnowCrab::getBBox(ll=!xy);#--bounding box in lat/lon (WGS84) or xy (Alaska ALbers)
+#  if (xy) bbx = wtsGIS::transformBBox(bbx,wtsGIS::get_crs(3338));
+  map_scale = ggplot2::coord_sf(xlim=c(bbx["xmin"],bbx["xmax"]),ylim=c(bbx["ymin"],bbx["ymax"]),crs=wtsGIS::get_crs(bbx),expand=FALSE,clip="on");
   
   #--get theme 
   #----theme remove axis titles (necessary when connectivity zone labels are included in map)

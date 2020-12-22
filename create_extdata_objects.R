@@ -1,6 +1,14 @@
 #--create R data objects for package
 require(ggplot2);
 require(magrittr);
+#--also requires packages
+# raster
+# rDisMELS
+# RStoolbox
+# sf
+# stars
+# wtsGIS
+# wtsUtilities
 
 #--define coordinate reference systems
 crs_4326 = sf::st_crs(4326);#--WGS84
@@ -129,13 +137,16 @@ createConnections<-function(sf_dfr){
   names(sf_dfr1) = c("startZone","startLon","startLat","endZone","endLon","endLat","geometry");
   return(sf_dfr1);
 }
-sf_arrs19_ll = createConnections(sf_lbls19_ll);
+sf_arrs19_ll = rDisMELS::createConnectivityWeb(sf_lbls19_ll,xCol="lon",yCol="lat");
 sf_arrs19_xy = sf_arrs19_ll %>% sf::st_transform(3338);
-sf_arrs20_ll = createConnections(sf_lbls20_ll);
+sf_arrs20_ll = rDisMELS::createConnectivityWeb(sf_lbls20_ll,xCol="lon",yCol="lat");
 sf_arrs20_xy = sf_arrs20_ll %>% sf::st_transform(3338);
+#--check plot
 tmp = sf_arrs19_ll;
-ggplot(tmp,aes(colour=zone_start))+geom_sf();
-ggplot(tmp,aes(colour=startZone))+geom_segment(mapping=aes(x=startLon,y=startLat,xend=endLon,yend=endLat),arrow=arrow());
+ggplot2::ggplot(tmp,ggplot2::aes(colour=factor(startZone)))+
+  ggplot2::geom_sf()+ggplot2::scale_colour_discrete();
+ggplot2::ggplot(tmp,ggplot2::aes(colour=factor(startZone)))+
+  ggplot2::geom_segment(mapping=ggplot2::aes(x=startlon,y=startlat,xend=endlon,yend=endlat),arrow=ggplot2::arrow());
 #----save objects
 wtsUtilities::saveObj(sf_arrs19_ll,"./inst/extdata/CZArrows2019.LL.RData")
 wtsUtilities::saveObj(sf_arrs19_xy,"./inst/extdata/CZArrows2019.XY.RData")
@@ -182,10 +193,22 @@ cutpts = c(seq(-8000,-1000,1000),-500,-250,-200,-150,-100,-50,0); nc = length(cu
 rcl_dfr = data.frame(from=cutpts[1:(nc-1)],to=cutpts[2:nc],value=cutpts[1:(nc-1)]);
 rcl_mat = as.matrix(rcl_dfr);
 bathym_c = raster::reclassify(bathym,rcl_mat,include.lowest=TRUE);
+#--transform to stars objects and Alaska Albers
+stars_c_ll = stars::st_as_stars(bathym_c);
+stars_c_xy = stars::st_warp(stars_c_ll,crs=crs_3338,cellsize=1000,method="near");
+stars_rb_ll = stars::st_as_stars(bathym_rb);
+stars_rb_xy = stars::st_warp(stars_rb_ll,crs=crs_3338,cellsize=1000,method="near");
+#--switch .._xy stars objects back to raster objects
+rstr_c_xy  = stars:::st_as_raster(stars_c_xy); #--RasterLayer
+rstr_rb_xy = stars:::st_as_raster(stars_rb_xy);#--RasterBrick
 #--create ggplot2 annotation_raster layers
-bathym_ggbw  = RStoolbox::ggR(bathym_c,ggLayer=TRUE,stretch="hist");
-bathym_ggrgb = RStoolbox::ggRGB(bathym_rb,r=1,g=2,b=3,ggLayer=TRUE);
+bathym_ggbw  = RStoolbox::ggR(bathym_c,   ggLayer=TRUE,stretch="hist");
+bathym_ggrgb = RStoolbox::ggRGB(bathym_rb,ggLayer=TRUE,r=1,g=2,b=3);
+bathym_ggbw_xy  = RStoolbox::ggR(rstr_c_xy,  ggLayer=TRUE,stretch="hist");
+bathym_ggrgb_xy = RStoolbox::ggRGB(rstr_rb_xy,ggLayer=TRUE,r=1,g=2,b=3);
 rm(bathym,bathym_min,bathym_max,bathym_vals,mat_rgb,bathym_r,bathym_g,bathym_b,bathym_rb);
+rm(stars_c_ll,stars_c_xy,stars_rb_ll,stars_rb_xy);
+
 #plot bathymetry rasters
 ggplot()+
   bathym_ggrgb + 
@@ -197,7 +220,18 @@ ggplot()+
   geom_sf(data=sf_land_ll,fill="black",colour=NA) +
   geom_sf(data=sf_cz20_ll,colour="black",fill=NA,alpha=0.5) + 
   coord_sf(xlim=c(168,203),y=c(51.67,68.49),expand=FALSE,clip="on");
+ggplot()+
+  bathym_ggrgb_xy +
+  geom_sf(data=sf_land_xy,fill="green",colour=NA) + 
+  geom_sf(data=sf_cz20_xy,colour="blue",fill=NA,alpha=0.5) + 
+  coord_sf(xlim=c(-2641743.2,-123570),y=c(415108.7,2640678.2),crs=crs_3338,expand=FALSE,clip="on");
+ggplot()+
+  bathym_ggbw_xy + 
+  geom_sf(data=sf_land_xy,fill="black",colour=NA) +
+  geom_sf(data=sf_cz20_xy,colour="black",fill=NA,alpha=0.5); + 
+  coord_sf(xlim=c(-2641743.2,-123570),y=c(415108.7,2640678.2),crs=crs_3338,expand=FALSE,clip="on");
 #--save objects
-wtsUtilities::saveObj(bathym_ggbw, "./inst/extdata/BathymAnnotLayerBW.LL.RData");
-wtsUtilities::saveObj(bathym_ggrgb,"./inst/extdata/BathymAnnotLayerRGB.LL.RData");
-
+wtsUtilities::saveObj(bathym_ggbw,    "./inst/extdata/BathymAnnotLayerBW.LL.RData");
+wtsUtilities::saveObj(bathym_ggrgb,   "./inst/extdata/BathymAnnotLayerRGB.LL.RData");
+wtsUtilities::saveObj(bathym_ggbw_xy, "./inst/extdata/BathymAnnotLayerBW.XY.RData");
+wtsUtilities::saveObj(bathym_ggrgb_xy,"./inst/extdata/BathymAnnotLayerRGB.XY.RData");
