@@ -10,6 +10,7 @@ License: MIT
 Depends: R (>= 3.2.1)
 Imports:
     ggplot2 (>= 3.0),
+    grid,
     rDisMELS,
     readr,
     reshape2 (>= 1.4.1),
