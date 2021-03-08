@@ -7,7 +7,7 @@ Author: William T. Stockhausen
 Maintainer: William T. Stockhausen <william.stockhausen@noaa.gov>
 Description: Provides a set of basic functions for dealing with DisMELS Snow Crab IBM model output.
 License: MIT
-Depends: R (>= 3.2.1)
+Depends: R (>= 3.6.0)
 Imports:
     cowplot,
     dplyr,
