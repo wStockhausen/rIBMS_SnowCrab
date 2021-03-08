@@ -66,17 +66,22 @@ getBasemapLayers<-function(czType=c("2020","2019"),
   map_scale = NULL;
   bbx = rIBMsSnowCrab::getBBox(ll=!xy);#--bounding box in lat/lon (WGS84) or xy (Alaska ALbers)
 #  if (xy) bbx = wtsGIS::transformBBox(bbx,wtsGIS::get_crs(3338));
-  map_scale = ggplot2::coord_sf(xlim=c(bbx["xmin"],bbx["xmax"]),ylim=c(bbx["ymin"],bbx["ymax"]),
-                                crs=wtsGIS::get_crs(bbx),expand=FALSE,clip="on",
+  map_scale = ggplot2::coord_sf(xlim=c(bbx["xmin"],bbx["xmax"]),
+                                ylim=c(bbx["ymin"],bbx["ymax"]),
+                                crs=wtsGIS::get_crs(bbx),
+                                expand=FALSE,
+                                clip="on",
                                 default=TRUE);
   
   #--define theme 
   #----define aspect ratio for panels
-  asp=NA; #--let ggplot2 work it out
+  asp=NULL; #--let ggplot2 work it out
   if (xy) asp = (bbx["ymax"]-bbx["ymin"])/(bbx["xmax"]-bbx["xmin"]);
   #----remove axis titles (necessary when connectivity zone labels are included in map)
-  theme = ggplot2::theme(axis.title.x = element_blank(),axis.title.y = element_blank(),
-                         panel.spacing=grid::unit(0.05,"cm"),aspect.ratio=asp);
+  theme = ggplot2::theme(axis.title.x = element_blank(),
+                         axis.title.y = element_blank(),
+                         panel.spacing=grid::unit(0.05,"cm"),
+                         aspect.ratio=asp);
   return(list(bathym=lyr_bathym,land=lyr_land,zones=lyr_zones,labels=lyr_labs,
               map_scale=map_scale,theme=theme));
 }
