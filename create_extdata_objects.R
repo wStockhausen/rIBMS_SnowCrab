@@ -189,7 +189,7 @@ bathym_g = bathym; bathym_g@data@values = mat_rgb[,2]; bathym_g@data@min = min(m
 bathym_b = bathym; bathym_b@data@values = mat_rgb[,3]; bathym_b@data@min = min(mat_rgb[,3],na.rm=TRUE); bathym_b@data@max=max(mat_rgb[,3],na.rm=TRUE);
 bathym_rb = raster::brick(bathym_r,bathym_g,bathym_b);
 #--bin scale
-cutpts = c(seq(-8000,-1000,1000),-500,-250,-200,-150,-100,-50,0); nc = length(cutpts);
+cutpts = c(seq(-8000,-1000,1000),-500,-250,-200,-150,-100,-50,-25, 0); nc = length(cutpts);
 rcl_dfr = data.frame(from=cutpts[1:(nc-1)],to=cutpts[2:nc],value=cutpts[1:(nc-1)]);
 rcl_mat = as.matrix(rcl_dfr);
 bathym_c = raster::reclassify(bathym,rcl_mat,include.lowest=TRUE);

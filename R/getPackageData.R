@@ -21,6 +21,8 @@
 getPackageData<-function(name,
                          xyType=c("LL","AA"),
                          bwType=c("BW","RGB")){
+  xyType=xyType[1];
+  bwType=bwType[1];
   if (tolower(name)=="land") {
     fn = paste0("extdata/Land.",toupper(xyType),".RData");
     return(wtsUtilities::getObj(system.file(fn,package="rIBMsSnowCrab")));
