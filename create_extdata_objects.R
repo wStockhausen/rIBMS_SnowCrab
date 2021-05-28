@@ -198,25 +198,39 @@ stars_c_ll = stars::st_as_stars(bathym_c);
 stars_c_xy = stars::st_warp(stars_c_ll,crs=crs_3338,cellsize=1000,method="near");
 stars_rb_ll = stars::st_as_stars(bathym_rb);
 stars_rb_xy = stars::st_warp(stars_rb_ll,crs=crs_3338,cellsize=1000,method="near");
+#--create contours at cutpts
+cntr_ll = stars::st_contour(stars_c_ll,contour_lines=TRUE,breaks=cutpts);
+cntr_xy = stars::st_contour(stars_c_xy,contour_lines=TRUE,breaks=cutpts);
 #--switch .._xy stars objects back to raster objects
 rstr_c_xy  = stars:::st_as_raster(stars_c_xy); #--RasterLayer
 rstr_rb_xy = stars:::st_as_raster(stars_rb_xy);#--RasterBrick
 #--create ggplot2 annotation_raster layers
-bathym_ggbw  = RStoolbox::ggR(bathym_c,   ggLayer=TRUE,stretch="hist");
-bathym_ggrgb = RStoolbox::ggRGB(bathym_rb,ggLayer=TRUE,r=1,g=2,b=3);
+bathym_ggbw_ll  = RStoolbox::ggR(bathym_c,   ggLayer=TRUE,stretch="hist");
+bathym_ggrgb_ll = RStoolbox::ggRGB(bathym_rb,ggLayer=TRUE,r=1,g=2,b=3);
 bathym_ggbw_xy  = RStoolbox::ggR(rstr_c_xy,  ggLayer=TRUE,stretch="hist");
 bathym_ggrgb_xy = RStoolbox::ggRGB(rstr_rb_xy,ggLayer=TRUE,r=1,g=2,b=3);
+#--create ggplot2 legends for bathymetry layers
+lgnd_bw  = (ggplot() + 
+              RStoolbox::ggR(bathym_c, ggLayer=TRUE,geom_raster=TRUE,stretch="hist",forceCat=TRUE) +
+              ggplot2::scale_fill_grey(start=0.01,end=0.95,na.value=NA)) %>%
+             cowplot::get_legend();
+myClrs = myRmp((cutpts-min(cutpts))/(max(cutpts)-min(cutpts)))
+myPal  = grDevices::colorRampPalette(rgb(myClrs[,1],myClrs[,2],myClrs[,3],maxColorValue=255));
+lgnd_rgb = (ggplot() + 
+              RStoolbox::ggR(bathym_c, ggLayer=TRUE,geom_raster=TRUE,forceCat=TRUE) +
+              ggplot2::scale_fill_discrete(type=myPal(nc),name="depth (m)")) %>%
+             cowplot::get_legend();
 rm(bathym,bathym_min,bathym_max,bathym_vals,mat_rgb,bathym_r,bathym_g,bathym_b,bathym_rb);
 rm(stars_c_ll,stars_c_xy,stars_rb_ll,stars_rb_xy);
 
 #plot bathymetry rasters
 ggplot()+
-  bathym_ggrgb + 
+  bathym_ggrgb_ll + 
   geom_sf(data=sf_land_ll,fill="green",colour=NA) +
-  geom_sf(data=sf_cz20_ll,colour="blue",fill=NA,alpha=0.5) + 
+  geom_sf(data=sf_cz20_ll,colour="blue",fill=NA,alpha=0.5) +
   coord_sf(xlim=c(168,203),y=c(51.67,68.49),expand=FALSE,clip="on");
 ggplot()+
-  bathym_ggbw + 
+  bathym_ggbw_ll + 
   geom_sf(data=sf_land_ll,fill="black",colour=NA) +
   geom_sf(data=sf_cz20_ll,colour="black",fill=NA,alpha=0.5) + 
   coord_sf(xlim=c(168,203),y=c(51.67,68.49),expand=FALSE,clip="on");
@@ -231,7 +245,13 @@ ggplot()+
   geom_sf(data=sf_cz20_xy,colour="black",fill=NA,alpha=0.5); + 
   coord_sf(xlim=c(-2641743.2,-123570),y=c(415108.7,2640678.2),crs=crs_3338,expand=FALSE,clip="on");
 #--save objects
-wtsUtilities::saveObj(bathym_ggbw,    "./inst/extdata/BathymAnnotLayerBW.LL.RData");
-wtsUtilities::saveObj(bathym_ggrgb,   "./inst/extdata/BathymAnnotLayerRGB.LL.RData");
+wtsUtilities::saveObj(myRmp,          "./inst/extdata/BathymColourRamp.RData");
+wtsUtilities::saveObj(myPal,          "./inst/extdata/BathymColourPalette.RData");
+wtsUtilities::saveObj(lgnd_bw,        "./inst/extdata/BathymLegend.BW.RData");
+wtsUtilities::saveObj(lgnd_rgb,       "./inst/extdata/BathymLegend.RGB.RData");
+wtsUtilities::saveObj(cntr_ll,        "./inst/extdata/BathymContours.LL.RData");
+wtsUtilities::saveObj(cntr_xy,        "./inst/extdata/BathymContours.XY.RData");
+wtsUtilities::saveObj(bathym_ggbw_ll, "./inst/extdata/BathymAnnotLayerBW.LL.RData");
+wtsUtilities::saveObj(bathym_ggrgb_ll,"./inst/extdata/BathymAnnotLayerRGB.LL.RData");
 wtsUtilities::saveObj(bathym_ggbw_xy, "./inst/extdata/BathymAnnotLayerBW.XY.RData");
 wtsUtilities::saveObj(bathym_ggrgb_xy,"./inst/extdata/BathymAnnotLayerRGB.XY.RData");

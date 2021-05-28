@@ -2,28 +2,21 @@
 % Please edit documentation in R/plotBasemapLayers.R
 \name{plotBasemapLayers}
 \alias{plotBasemapLayers}
-\title{Get \pkg{ggplot2} layers for a basemap}
+\title{Plot \pkg{ggplot2} layers of a basemap}
 \usage{
 plotBasemapLayers(bmls)
 }
 \arguments{
-\item{czType}{- type of connectivity zone to get ("2020"or "2019")}
-
-\item{xy}{- flag (T/F) for coordinate type (TRUE=Alaska Albers projection; FALSE=WGS84 lat/lon)}
-
-\item{bw}{- flag (T/F) for black & white or color scheme}
-
-\item{noBathym}{- flag (T/F) to not include bathymetry layer (default=FALSE)}
+\item{bmls}{- basemap layers from call to \code{\link{getBasemapLayers}}}
 }
 \value{
-list with ggplot2 layers 'bathym', 'land', 'zones', 'labels', 'map_scale', and 'theme'.
+list with ggplot2 plot object.
 }
 \description{
-Function to get a set of \pkg{ggplot2} layers for a basemap.
+Function to plot a set of \pkg{ggplot2} layers for a basemap from call to \code{\link{getBasemapLayers}}.
 }
 \details{
-If \code{xy} is TRUE, 'bathym' and 'map_scale' in the returned list will be NULL (currently).
-Note that including 'theme' in the basemap simply removes the axis labels, which would otherwise be 'x' and 'y'.
+None.
 }
 \examples{
 #A default lat/lon basemap in color with bathymetry can be constructed and printed using the following:\cr

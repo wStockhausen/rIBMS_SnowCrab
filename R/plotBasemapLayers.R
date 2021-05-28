@@ -1,17 +1,13 @@
 #'
-#' @title Get \pkg{ggplot2} layers for a basemap
+#' @title Plot \pkg{ggplot2} layers of a basemap
 #' 
-#' @description Function to get a set of \pkg{ggplot2} layers for a basemap.
+#' @description Function to plot a set of \pkg{ggplot2} layers for a basemap from call to \code{\link{getBasemapLayers}}.
 #' 
-#' @param czType - type of connectivity zone to get ("2020"or "2019")
-#' @param xy - flag (T/F) for coordinate type (TRUE=Alaska Albers projection; FALSE=WGS84 lat/lon)
-#' @param bw - flag (T/F) for black & white or color scheme
-#' @param noBathym - flag (T/F) to not include bathymetry layer (default=FALSE)
+#' @param bmls - basemap layers from call to \code{\link{getBasemapLayers}}
 #' 
-#' @return list with ggplot2 layers 'bathym', 'land', 'zones', 'labels', 'map_scale', and 'theme'.
+#' @return list with ggplot2 plot object.
 #' 
-#' @details If \code{xy} is TRUE, 'bathym' and 'map_scale' in the returned list will be NULL (currently).
-#' Note that including 'theme' in the basemap simply removes the axis labels, which would otherwise be 'x' and 'y'.
+#' @details None.
 #' 
 #' @examples 
 #' #A default lat/lon basemap in color with bathymetry can be constructed and printed using the following:\cr
@@ -24,9 +20,6 @@
 #' print(plotBasemapLayers(bmls));
 #' 
 #' @import ggplot2
-#' @importFrom wtsGIS get_crs
-#' @importFrom wtsGIS transformBBox
-#' @importFrom wtsUtilities getObj
 #' 
 #' @export
 #' 
