@@ -9,7 +9,7 @@ spatialIMD_calc(stage, source, sf_temp, sf_crop = NULL)
 \arguments{
 \item{sf_temp}{- sigma-level temperature layer from ROMS model output as \pkg{sf} dataframe}
 
-\item{sf_crop}{- \pkg{sf} dataframe with polygon to crop by using \code{linl[sf]{st_intersection}}}
+\item{sf_crop}{- \pkg{sf} dataframe with polygon to crop by using [sf::st_intersection()]}
 
 \item{fn}{- path to ROMS model output file}
 }

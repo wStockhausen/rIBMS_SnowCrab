@@ -3,7 +3,7 @@
 #'
 #' @description Function to get the constants for the Belehradek equation by life stage and source.
 #' 
-#' @param sources - "all", "Ouellet and Ste Marie 2018", or "Yamamoto et al. 2014"
+#' @param sources - "all", "Ouellet and Ste Marie 2018", "Yamamoto et al. 2014", or "Yamamoto et al. 2015"
 #' @param stages - "all" or character vector with required life stages
 #' 
 #' @return tibble with columns 'source', 'stage', 'a', 'se_a', 'b', 'se_b', and 'c'.
@@ -21,19 +21,19 @@ getBelehradekConstants<-function(sources="all",
         tibble(source="Yamamoto et al. 2014",      stage="Z1-M", a= 530.5, se_a= 22.38,b=-0.02,se_b=0.26, c=1.0),
         tibble(source="Yamamoto et al. 2014",      stage="Z1",a= 229.5, se_a= 11.05,b= 0.63,se_b=0.26, c=1.0),
         tibble(source="Yamamoto et al. 2014",      stage="M", a= 417.3, se_a=  0.09,b=-2.24,se_b=0.09, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C1",a= 276.07,se_a= 15.93,b=-1.29,se_b=0.14, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C2",a= 429.06,se_a= 18.99,b=-2.54,se_b=0.19, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C3",a= 511.44,se_a= 33.06,b=-2.63,se_b=0.28, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C4",a= 762.62,se_a= 74.77,b=-3.68,se_b=0.58, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C5",a= 801.73,se_a= 98.33,b=-3.28,se_b=0.67, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C6",a= 996.53,se_a=133.14,b=-4.87,se_b=0.95, c=1.0),
-        tibble(source="Yamamoto et al. 2014",      stage="C7",a=1115.32,se_a=177.68,b=-4.02,se_b=0.10, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C1",a= 276.07,se_a= 15.93,b=-1.29,se_b=0.14, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C2",a= 429.06,se_a= 18.99,b=-2.54,se_b=0.19, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C3",a= 511.44,se_a= 33.06,b=-2.63,se_b=0.28, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C4",a= 762.62,se_a= 74.77,b=-3.68,se_b=0.58, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C5",a= 801.73,se_a= 98.33,b=-3.28,se_b=0.67, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C6",a= 996.53,se_a=133.14,b=-4.87,se_b=0.95, c=1.0),
+        tibble(source="Yamamoto et al. 2015",      stage="C7",a=1115.32,se_a=177.68,b=-4.02,se_b=0.10, c=1.0),
         tibble(source="Ouellet and Ste Marie 2018",stage="Z1",a=4903.33,se_a=0, b=-6.1 ,se_b=0, c=1.87),
         tibble(source="Ouellet and Ste Marie 2018",stage="Z2",a=2461.31,se_a=0, b=-4.73,se_b=0 ,c=1.67),
         tibble(source="Ouellet and Ste Marie 2018",stage="M" ,a= 260.39,se_a=0 ,b=-1.37,se_b=0, c=0.82)
        );
-  if (sources=="all") sources<-unique(dfr$source);
-  if (stages=="all") stages<-unique(dfr$stage);
+  if (sources[1]=="all") sources<-unique(dfr$source);
+  if (stages[1]=="all") stages<-unique(dfr$stage);
   idx<-(dfr$source %in% sources)&(dfr$stage %in% stages);
   if (any(idx)) return(dfr[idx,]);
   return(NULL);
@@ -78,12 +78,12 @@ calcIntermoltDuration_Belehradek<-function(a,b,c,T,dt=1){
 }
 
 #'
-#' @title Calculate the intermolt duration using Belehradek equation
+#' @title Calculate the intermolt duration using the Belehradek equation for selected stages
 #'
-#' @description Function to calculate the intermolt duration using Belehradek equation for given
+#' @description Function to calculate the intermolt duration using the Belehradek equation for given
 #' stages based on given sources.
 #'
-#' @param sources - "all", "Ouellet and Ste Marie 2018", or "Yamamoto et al. 2014"
+#' @param sources - "all", "Ouellet and Ste Marie 2018", "Yamamoto et al. 2014", or "Yamamoto et al. 2015"
 #' @param stages - "all" or character vector with required life stages
 #' @param T - temperature (either a single number or a time series)
 #' @param dt - time step (same time units as a), if T is a time series

@@ -7,7 +7,7 @@
 getBelehradekConstants(sources = "all", stages = "all")
 }
 \arguments{
-\item{sources}{- "all", "Ouellet and Ste Marie 2018", or "Yamamoto et al. 2014"}
+\item{sources}{- "all", "Ouellet and Ste Marie 2018", "Yamamoto et al. 2014", or "Yamamoto et al. 2015"}
 
 \item{stages}{- "all" or character vector with required life stages}
 }

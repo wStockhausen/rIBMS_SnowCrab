@@ -67,36 +67,41 @@ if (!identical(sf::st_is_longlat(bath_ebs_LL),TRUE)) cat("bath_ebs_LL is not LL\
 #----WARNING: takes awhile to plot the following
 #----map projection is XY
 #----graticules are LL
-ggplot() + 
-  geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2);
+if (FALSE)
+  ggplot() + 
+    geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2);
 
 #----OK!
 #----WARNING: takes awhile to plot the following
 #----map projection is XY
 #----graticules are XY, graticule labels are turned off
-ggplot() + 
-  geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2) +
-  coord_sf(datum=crs_XY,label_axes="----");
+if (FALSE)
+  ggplot() + 
+    geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2) +
+    coord_sf(datum=crs_XY,label_axes="----");
 
 #----same as above: no real speed-up
-ggplot() + 
-  geom_sf(data=land_ebs_XYu,colour=NA,fill="green",alpha=0.2) +
-  coord_sf(datum=crs_XY,label_axes="----");
+if (FALSE)
+  ggplot() + 
+    geom_sf(data=land_ebs_XYu,colour=NA,fill="green",alpha=0.2) +
+    coord_sf(datum=crs_XY,label_axes="----");
 
 #----WARNING: definitely don't want to do the following--takes a very long time!
 #----map projection is LL
 #----map extends -180 to 180 long because "land" includes Aleutians
 #----graticules are LL
-ggplot() + 
-  geom_sf(data=land_ebs_LL,colour=NA,fill="blue",alpha=0.2);
+if (FALSE)
+  ggplot() + 
+    geom_sf(data=land_ebs_LL,colour=NA,fill="blue",alpha=0.2);
 
 #----WARNING: definitely don't want to do the following--takes a very long time!
 #----map projection is LL
 #----map extends -180 to 180 long
 #----graticules are LL
-ggplot() + 
-  geom_sf(data=land_ebs_LL,colour=NA,fill="blue",alpha=0.2) +
-  geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2);
+if (FALSE)
+  ggplot() + 
+    geom_sf(data=land_ebs_LL,colour=NA,fill="blue",alpha=0.2) +
+    geom_sf(data=land_ebs_XY,colour=NA,fill="green",alpha=0.2);
 
 #----map projection is XY
 #----graticules are XY

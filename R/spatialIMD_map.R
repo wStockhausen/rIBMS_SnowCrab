@@ -4,7 +4,7 @@
 #' @description Map the spatial distribution of IMD for a life stage based on
 #' temperature from ROMS model output
 #' 
-#' @param sf_imd - \pkg{sf} dataframe with IMD info (i.e., from \code{\link{spatialIMD_calc}})
+#' @param sf_imd - \pkg{sf} dataframe with IMD info (i.e., from [spatialIMD_calc])
 #' @param subtitle - subtitle for map
 #' @param scale_type_imd - fill scale type ("d","c","b") for IMD (default is "b"--binned)
 #' @param breaks_imd - vector of values to use as breaks in scale for IMDs
@@ -51,7 +51,7 @@ spatialIMD_map<-function(sf_imd,
   #--get crs of bbx and determine if plot should be xy or lat/lon
   crs = wtsGIS::get_crs(bbx);
   LL  = sf::st_is_longlat(crs);
-  bbx %<>% shift_longitude();
+  bbx %<>% wtsGIS::shift_longitude();
   
   #--transform and crop land and bathymetry
   # land %<>% sf::st_transform(crs) %>%

@@ -22,7 +22,7 @@ spatialIMD_map(
 )
 }
 \arguments{
-\item{sf_imd}{- \pkg{sf} dataframe with IMD info (i.e., from \code{\link{spatialIMD_calc}})}
+\item{sf_imd}{- \pkg{sf} dataframe with IMD info (i.e., from [spatialIMD_calc])}
 
 \item{subtitle}{- subtitle for map}
 

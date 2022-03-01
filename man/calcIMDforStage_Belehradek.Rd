@@ -2,12 +2,12 @@
 % Please edit documentation in R/calcIntermoltDuration_Belehradek.R
 \name{calcIMDforStage_Belehradek}
 \alias{calcIMDforStage_Belehradek}
-\title{Calculate the intermolt duration using Belehradek equation}
+\title{Calculate the intermolt duration using the Belehradek equation for selected stages}
 \usage{
 calcIMDforStage_Belehradek(sources = "all", stages = "all", T, dt = 1)
 }
 \arguments{
-\item{sources}{- "all", "Ouellet and Ste Marie 2018", or "Yamamoto et al. 2014"}
+\item{sources}{- "all", "Ouellet and Ste Marie 2018", "Yamamoto et al. 2014", or "Yamamoto et al. 2015"}
 
 \item{stages}{- "all" or character vector with required life stages}
 
@@ -19,7 +19,7 @@ calcIMDforStage_Belehradek(sources = "all", stages = "all", T, dt = 1)
 A tibble with columns 'source', 'stage', 'T', and 'D'.
 }
 \description{
-Function to calculate the intermolt duration using Belehradek equation for given
+Function to calculate the intermolt duration using the Belehradek equation for given
 stages based on given sources.
 }
 \details{

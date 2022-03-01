@@ -6,7 +6,7 @@
 #' 
 #' @param fn - path to ROMS model output file
 #' @param sf_temp - sigma-level temperature layer from ROMS model output as \pkg{sf} dataframe 
-#' @param sf_crop - \pkg{sf} dataframe with polygon to crop by using \code{linl[sf]{st_intersection}}
+#' @param sf_crop - \pkg{sf} dataframe with polygon to crop by using [sf::st_intersection()]
 #' 
 #' @return \pkg{sf} dataframe with spatial distribution of IMD
 #' 

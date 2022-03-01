@@ -1,6 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 create_extdata_objects.R
+testCopemanFunctions.R
 testMapping.R
+testCopemanFunctions.pdf
 ^inst/gisdata/.*\\.
 ^inst/gisdata/ConnectivityZones2020/.*\\.
